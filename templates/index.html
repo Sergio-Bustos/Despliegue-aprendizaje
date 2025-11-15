@@ -61,8 +61,8 @@
     <!--CONTENIDO DE LA PAGINA; AQUI ESTA LA INFORMACION DE CONTACTO Y LOS TEXTOS INFRORMATIVOS--->
     <div class="container"> <!-- Clase del contenedor que hicimos en CSS-->
         <h2>Registro de Contacto</h2> <!--Titulo con tamaño h2-->
-        <form action="/formulario" method="POST"> <!-- El formulario tiene la accion de POST;
-            Parte del protocolo HTTP para enviar datos -->
+        <form action="/formulario" method="POST"> <!-- El formulario tiene la accion de POST que luego va redirigida a la 
+            ruta formulario en el servidor que esta en Flask como '/formulario'; Parte del protocolo HTTP para enviar datos -->
             <label for="nombre">Nombre:</label> <!-- Etiqueta con un campo de entrada en un formulario -->
             <input type="text" id="nombre" name="nombre" required> <!-- Entrada de tipo text para el nombre y que es requerido -->
 
@@ -88,29 +88,62 @@
     </div> <!--Se cierra el div-->
 
 
-
+<!--LOGICA DEL FORMULARIO SI NO APLICAMOS LA DE FLASK Y LUEGO EN HTML CON LA URL '/formulario': -->
     <!-- <script>
-        const fformData = {
-            nombre: document.getElementById('nombre').value,
-            apellido: document.getElementById('apellido').value,
-            direccion: document.getElementById('direccion').value,
-            telefono: document.getElementById('telefono').value,
-            correo: document.getElementById('correo').value,
-            mensaje: document.getElementById('mensaje').value
-        }
-        console.log('datos a enviar: ', FormData);
-        // Enviar los datos al servidor
-        try{
-            const response = await fetch('/contacto', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(FormData)
-            });
-            // Convertir la ruta de respuesta del servidor en JSON
-            const result = await response.json();
-            // Se selecciona el vid donde se mostrara el mensaje de respuesta
-            const mensajeDiv = document.getElementById('mensaje');
-        }
+        /*===========================LOGICA DEL FORMULARIO EN JAVASCRIPT=======================
+        este bloque de controla lo que pasa cuando el usuario envia el formulario.
+        Se encarga de mandar los datos al servidor y mostrar los mensajes */
+
+        // Capturar el evento de envío del formulario
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Prevenir el envío tradicional del formulario
+
+            // Recopilar los datos del formulario
+            const formData = {
+                nombre: document.getElementById('nombre').value,
+                correo: document.getElementById('correo').value,
+                mensaje: document.getElementById('mensaje').value
+            }
+
+            console.log('datos a enviar: ', formData); /*muestra en la consola los datos a enviar */
+
+            try {
+                /*ENVIAR LOS DATOS AL SERVIDOR (RUTA /contacto)*/
+                const response = await fetch('/contacto', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(formData)
+                });
+
+                //Convertir la respuesta del servidor en JSON 
+                const result = await response.json();
+
+                // Selecciona el div donde se mostrará el mensaje
+                const mensajeDiv = document.getElementById('mensajeAlerta');
+
+                // Si la respuesta del servidor es correcta (código 200 o 201)
+                if (response.ok) {
+                    mensajeDiv.className = 'message success'; // Usa estilo verde
+                    mensajeDiv.textContent = '' + result.mensaje; // Muestra mensaje de éxito
+                    mensajeDiv.style.display = 'block'; // Hace visible el mensaje
+                    document.getElementById('contactForm').reset(); // Limpia los campos del formulario
+                } else {
+                    // Si hay error, muestra el mensaje en rojo
+                    mensajeDiv.className = 'message error';
+                    mensajeDiv.textContent = ' ' + result.error;
+                    mensajeDiv.style.display = 'block';
+                }
+
+                // Oculta el mensaje después de 5 segundos
+                setTimeout(() => { mensajeDiv.style.display = 'none'; }, 5000);
+            } catch (error) {
+                // Si el servidor no responde o hay fallo de conexión
+                const mensajeDiv = document.getElementById('mensajeAlerta');
+                mensajeDiv.className = 'message error';
+                mensajeDiv.textContent = ' Error de conexión';
+                mensajeDiv.style.display = 'block';
+            }
+        });
     </script> -->
 
 </body> <!--Se cierra el body-->
